@@ -1,0 +1,148 @@
+////////
+// VARIABLE DECLERATIONS
+// A = collision detection boolean for player1
+// B = collision detection boolean for player2
+// C = copy of ball.x
+// D = copy of ball.y
+// E = copy of player1.x
+// F = copy of player1.y
+// G = game timer
+// H = round timer
+// I = Half-way line
+// J = 
+// K = copy of player2.x
+// L = copy of player2.y
+// M = player1.x
+// N = player1.y
+// O = player 1 score
+// P = player2.x
+// Q = player2.y
+// R = player 2 score
+// S = ball.movement
+// T = ball.movement
+// U = 
+// V = ball velocity
+// W = 
+// X = ball.x
+// Y = ball.y
+// Z = loop counter
+////////
+
+Cls		// Clear screen
+
+0 -> O	// player1 score
+0 -> R	// player2 score
+0 -> G	// Game timer
+
+Lbl 1
+4 + Int 11Ran# -> X		// balls x-coordinate is a random number between 4 and 11
+1 + Int 6Ran# -> Y		// balls y-coordinate is a random number between 1 and 6
+1 -> V				// will initally go right since velocity is positive
+1 -> S				// ball x-movement initialise to 1
+1 -> T				// ball y-movement intialise to 1
+
+1 -> P : 4 -> Q 	// player2 starting position (1,4)
+21 -> M : 4 -> N	// player1 starting position (21,4)
+
+0 -> A : 0 -> B		// boolean condition for collision detection between ball and player1 & player2
+					// if A=0, player1 hit the ball : if A=1, player1 missed the ball
+					// if B=0, player2 hit the ball : if B=1, player2 missed the ball
+					
+1 -> Z		// initilaise loop counter to 1
+
+while (Z == 1):
+
+	1 -> A : 1 -> B			// reset collision detection booleans
+	
+	//* BALL COLLIDES WITH PLAYER1 or PLAYER2 *//
+	if (X == M and Y == N):	// ball collides with player 1
+		-V -> S
+		0 -> A
+	
+	if (X == P and Y == Q): // ball collides with player 2
+		V -> S
+		0 -> B
+		
+	//* PLAYER1 or PLAYER2 MISSES BALL *//
+	 if (X == 21 and A == 1)	// if (ball hits right side and player1 missed ball)
+		R + 1 -> R			// increment player2 score
+		2 -> Z
+		Goto 2
+	
+	if (X == 1 and B == 1)	// if (ball hits left side and player2 missed ball)
+		O + 1 -> O			// increment player1 score
+		2 -> Z
+		Goto 2
+			
+	G + 0.25 -> G		// make game timer work..
+	Locate 9,1,G		// draw game timer to screen
+	Locate 13,7,O		// draw player1 score to screen
+	Locate 9,7,R		// draw player2 score to screen
+	
+	// Draw half-way line to screen
+	for 1 -> i to 7 then
+		Locate 11, i " | "
+	next
+
+    // Copies of initial coordinates to detect movement
+    X -> C    // copy of ball.x
+    Y -> D    // copy of ball.y
+	
+    P -> K    // copy of player2.x
+    Q -> L    // copy of player2.y
+	
+    M -> E    // copy of player1.x
+    N -> F    // copy of player1.y
+	
+    //* BALL MOVEMENT *//
+	X + S -> X		// move ball vertically 
+	Y + T -> T		// move ball horizontally
+	
+	if (Y >= 7):
+		-V -> T		// ball hits bottom of map
+	if (Y <= 1):
+		V -> T		// ball hits top of map
+		
+	//* PLAYER MOVEMENT *//
+	If (Getkey == 32):	// player 1 moves up...
+		N - 1 -> N
+		if (N < 2)
+			N+1 -> N
+	
+	If (Getkey == 32):	// player 1 moves down...
+		N + 1 -> N
+		if (N > 7):
+			N-1 -> N
+			
+	If (Getkey == 72):	// player 2 moves up...
+		Q - 1 -> Q
+		If (Q < 2)
+			Q + 1 -> Q
+	
+	If (Getkey == 71):
+		Q + 1 -> Q
+		If (Q > 7)
+			Q - 1 -> Q
+	
+	Locate P,Q,"]"		// draw player 2
+	Locate M,N,"["		// draw player 1
+
+    if (Q != L or P != K)
+        Locate K, L, " "        // When player 2 moves up and down, make previous movement disappear
+    if (N != F or M != E)
+        Locate E, F, " "        // When player 1 moves up and down, make previous movement disappear
+    if (X != C or Y != D)		
+        Locate C, D, " "		// When ball moves, make previous movement disapper
+	
+	Locate X, Y, "O"	// draw ball
+	
+whileEnd
+    
+Lbl 2
+Locate X,Y," "
+Locate C,D," "
+Locate Q,P," "
+Locate L,K," "
+Locate M,N," "
+Locate F,E," "
+Goto 1
